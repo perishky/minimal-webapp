@@ -1,7 +1,0 @@
-#!/bin/bash
-
-echo "Stopping any running instances ..."
-apptainer instance stop db_instance 2>/dev/null || true
-apptainer instance stop website_instance 2>/dev/null || true
-apptainer instance stop webserver_instance 2>/dev/null || true
-
