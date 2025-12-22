@@ -1,0 +1,42 @@
+Bootstrap: docker
+From: python:3.11-slim
+
+%files
+    requirements.txt /app/requirements.txt
+    myproject /app/myproject
+    queryapp /app/queryapp
+    manage.py /app/manage.py
+
+%post
+    pip install --no-cache-dir -r /app/requirements.txt
+    
+    mkdir -p /app/static /app/media /app/logs    
+    chmod -R 755 /app
+
+%environment
+    export PYTHONUNBUFFERED=1
+    export DJANGO_SETTINGS_MODULE=myproject.settings
+ 
+%startscript
+    : "${DB_HOST:?database ip address must be provided via --env-file}"
+    : "${DB_PORT:?database port must be provided via --env-file}"
+    : "${DB_NAME:?database name must be provided via --env-file}"
+    : "${DB_USER:?database username must be provided via --env-file}"
+    : "${DB_PASSWORD:?database password must be provided via --env-file}"
+
+    cd /app
+    
+    for i in {1..30}; do
+        if python -c "import pymysql; pymysql.connect(host='$DB_HOST', port=int('$DB_PORT'), user='$DB_USER', password='$DB_PASSWORD', database='$DB_NAME')" 2>/dev/null; then
+            break
+        fi
+        echo "Waiting for MySQL... ($i/30)"
+        sleep 2
+    done
+    
+    python manage.py migrate --noinput
+
+    python manage.py collectstatic --noinput
+
+    exec python manage.py runserver 0.0.0.0:8000
+

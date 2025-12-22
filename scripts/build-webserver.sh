@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+CONFIG=$1
+
+source $CONFIG
+
+cp -r $REPODIR/webserver $OUTDIR/
+
+export WEBSITE_HOST
+export WEBSITE_PORT
+export WEBSERVER_NAME
+export WEBSERVER_PORT
+envsubst '${WEBSITE_HOST},${WEBSITE_PORT},${WEBSERVER_NAME},${WEBSERVER_PORT}' \
+	 < $REPODIR/webserver/nginx.conf \
+	 > $OUTDIR/webserver/nginx.conf 
+
+echo "Building webserver container..."
+cd $OUTDIR/webserver
+mkdir -p logs cache run
+apptainer build container.sif container.def
+

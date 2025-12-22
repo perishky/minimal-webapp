@@ -1,0 +1,8 @@
+echo "Starting webserver ..."
+apptainer instance start \
+    --bind $OUTDIR/webserver/logs:/var/log/nginx \
+    --bind $OUTDIR/webserver/cache:/var/cache/nginx \
+    --bind $OUTDIR/webserver/run:/var/run \
+    --bind $OUTDIR/website/static:/app/static:ro \
+    $OUTDIR/webserver/container.sif \
+    app_webserver_instance

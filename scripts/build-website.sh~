@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+CONFIG=$1
+
+source $CONFIG
+OUTDIR=$(realpath "$OUTDIR")
+REPODIR=$(realpath "$REPODIR")
+
+mkdir -p $OUTDIR/website
+
+cd $OUTDIR/website 
+
+mkdir -p logs static 
+
+cp -r $REPODIR/website/* .
+
+echo "Building website container..."
+apptainer build container.sif container.def

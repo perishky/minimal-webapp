@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+CONFIG=$1
+source $CONFIG
+OUTDIR=$(realpath "$OUTDIR")
+
+bash $REPODIR/scripts/stop.sh
+sleep 2
+
+echo "Starting database container ..."
+apptainer instance start \
+    --bind mysql/data:/data/mysql \
+    --bind mysql/logs:/var/log/mysql \
+    --env-file $CONFIG \
+    $OUTDIR/database/database.sif \
+    db_instance
+
+echo "Waiting for the database (30 seconds) ..."
+sleep 30
+
+echo "Starting website ..."
+apptainer instance start \
+    --bind django/logs:/app/logs \
+    --bind django/static:/app/static \
+    --env-file $CONFIG \
+    $OUTDIR/website/website.sif \
+    website_instance
+
+echo "Waiting for the website (10 seconds)..."
+sleep 10
+
+echo "Starting webserver ..."
+apptainer instance start \
+    --bind nginx/logs:/var/log/nginx \
+    --bind django/static:/app/static:ro \
+    $OUTDIR/webserver/webserver.sif \
+    webserver_instance
+
+echo "Running instances:"
+apptainer instance list
+

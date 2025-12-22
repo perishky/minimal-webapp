@@ -1,0 +1,15 @@
+Bootstrap: docker
+From: nginx:alpine
+
+%files
+    nginx.conf /etc/nginx/nginx.conf
+
+%post
+    mkdir -p /var/log/nginx /var/cache/nginx /var/run
+    chmod -R 755 /var/log/nginx /var/cache/nginx
+
+%startscript
+    exec nginx -g 'daemon off;'
+
+
+
