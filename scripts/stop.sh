@@ -1,7 +1,12 @@
 #!/bin/bash
 
-echo "Stopping any running instances ..."
-apptainer instance stop app_db_instance &>/dev/null || true
-apptainer instance stop app_website_instance &>/dev/null || true
-apptainer instance stop app_webserver_instance &>/dev/null || true
+set -e
+
+CONFIG=$1
+source $CONFIG
+
+bash $REPODIR/scripts/stop-database.sh 
+bash $REPODIR/scripts/stop-website.sh
+bash $REPODIR/scripts/stop-webserver.sh
+
 

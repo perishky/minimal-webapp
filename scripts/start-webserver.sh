@@ -7,6 +7,9 @@ source $CONFIG
 
 OUTDIR=$(realpath "$OUTDIR")
 
+bash $REPODIR/scripts/stop-webserver.sh
+sleep 2
+
 echo "Starting webserver ..."
 apptainer instance start \
     --bind $OUTDIR/webserver/logs:/var/log/nginx \

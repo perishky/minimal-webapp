@@ -7,6 +7,9 @@ source $CONFIG
 
 OUTDIR=$(realpath "$OUTDIR")
 
+bash $REPODIR/scripts/stop-website.sh
+sleep 2
+
 echo "Starting website ..."
 apptainer instance start \
     --bind $OUTDIR/website/logs:/app/logs \

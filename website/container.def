@@ -28,15 +28,18 @@ From: python:3.11-slim
     
     for i in {1..30}; do
         if python -c "import pymysql; pymysql.connect(host='$DB_HOST', port=int('$DB_PORT'), user='$DB_USER', password='$DB_PASSWORD', database='$DB_NAME')" 2>/dev/null; then
+            echo "Database responded"
             break
         fi
-        echo "Waiting for MySQL... ($i/30)"
+        echo "Waiting for the database ... ($i/30)"
         sleep 2
     done
-    
+
     python manage.py migrate --noinput
 
     python manage.py collectstatic --noinput
 
+    echo "Django website starting up ..."
     exec python manage.py runserver 0.0.0.0:8000
+
 

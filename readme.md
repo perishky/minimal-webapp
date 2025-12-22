@@ -25,6 +25,37 @@ bash scripts/start.sh config.env
 # bash scripts/start-webserver.sh config.env
 ```
 
+Logged output can be founded here:
+```
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_database_instance.out
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_website_instance.out
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_webserver_instance.out
+```
+
+Error messages can be found here:
+```
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_database_instance.err
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_website_instance.err
+tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_webserver_instance.err
+```
+
+To investigate what is occuring within any instance:
+
+```
+apptainer shell instance://app_database_instance
+apptainer shell instance://app_website_instance
+apptainer shell instance://app_webserver_instance
+```
+
+To see which ports are in use:
+
+```
+ss -tulpn
+```
+
+This list should include 8080 (webserver), 8000 (website) and 3306 (database).
+
+
 4. In a web browser:
   * List all users http://localhost:8080/api/users/
   * Get specific user http://localhost:8080/api/users/1/
@@ -33,8 +64,8 @@ bash scripts/start.sh config.env
 5. Stop services
 
 ```bash
-bash scripts/stop.sh
-# apptainer instance stop app_db_instance 
-# apptainer instance stop app_website_instance
-# apptainer instance stop app_webserver_instance
+bash scripts/stop.sh config.env
+# bash scripts/stop-database.sh
+# bash scripts/stop-website.sh
+# bash scripts/stop-webserver.sh
 ```

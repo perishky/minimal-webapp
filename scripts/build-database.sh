@@ -10,5 +10,5 @@ cp -r $REPODIR/database $OUTDIR/
 
 echo "Building database container..."
 cd $OUTDIR/database
-mkdir -p data logs
+mkdir -p run data logs
 apptainer build container.sif container.def
