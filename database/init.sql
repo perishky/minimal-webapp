@@ -1,7 +1,4 @@
 
--- Set root password
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
-
 -- Create database
 CREATE DATABASE IF NOT EXISTS ${DB_NAME};
 USE ${DB_NAME};
@@ -28,3 +25,6 @@ INSERT INTO users (name, email) VALUES
     ('Bob Johnson', 'bob@example.com'),
     ('Alice Williams', 'alice@example.com')
 ON DUPLICATE KEY UPDATE name=name;
+
+-- Set root password
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';

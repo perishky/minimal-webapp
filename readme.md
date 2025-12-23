@@ -25,6 +25,8 @@ bash scripts/start.sh config.env
 # bash scripts/start-webserver.sh config.env
 ```
 
+Outputs
+
 Logged output can be founded here:
 ```
 tail ~/.apptainer/instances/logs/$(hostname)/$(whoami)/app_database_instance.out

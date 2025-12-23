@@ -3,28 +3,14 @@ From: mysql:8.0-debian
 
 %files
     init.sql /data/init.sql
-
+    custom.cnf /etc/mysql/conf.d/custom.cnf
+    
 %post
     mkdir -p /data/mysql
     mkdir -p /var/run/mysqld
     
     apt-get update
     apt-get install gettext-base
-
-You can disable Unix socket connections entirely and force TCP-only in your MySQL configuration:
-
-    cat > /etc/mysql/conf.d/custom.cnf << 'EOF'
-[mysqld]
-bind-address = 0.0.0.0
-port = 3306
-skip-networking = 0
-skip-name-resolve
-
-[client]
-protocol = TCP
-port = 3306
-host = 127.0.0.1
-EOF
 
 %startscript 
     : "${DB_ROOT_PASSWORD:?database root password must be provided via --env-file}"
@@ -33,16 +19,20 @@ EOF
     : "${DB_USER:?database user name must be provided via --env-file}"
     : "${DB_PASSWORD:?database password must be provided via --env-file}"
 
+    rm -f /tmp/mysql.sock /tmp/mysql.sock.lock
+    rm -f /tmp/mysqlx.sock /tmp/mysqlx.sock.lock
+
     if [ ! -d "/data/mysql/mysql" ]; then
         echo "Initializing database..."	
-        mysqld --initialize-insecure --user=mysql --datadir=/data/mysql
-        sleep 30
-	echo "Setting up database ..."
+        mysqld --initialize-insecure --user=mysql
+	mysqld --user=mysql &
+        MYSQL_PID=$!
+        sleep 10
         mysql -u root <<EOF
             $(envsubst < /data/init.sql)
 EOF
+        kill $MYSQL_PID
+        wait $MYSQL_PID
     fi
 
-    exec mysqld \
-        --datadir=/data/mysql \
-        --user=mysql 
+    exec mysqld --user=mysql 
